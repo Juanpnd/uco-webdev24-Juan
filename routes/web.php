@@ -13,9 +13,6 @@ Route::prefix('/products')->controller(ProductController::class)->group(function
     Route::get('/edit', 'edit');
 });
 
-Route::prefix('products')->controller(ProductController::class)->group(function () {
-    Route::get('/', 'index')->name('products.index');
-    Route::get('/create', 'create')->name('products.create');
-    Route::post('/store', 'store')->name('products.store');
-    Route::get('/show/{id}',  'show')->name('products.show');
-});
+Route::get('/products', [ProductController::class, 'index'])->name('products.index'); // Menampilkan daftar produk
+Route::get('/products/create', [ProductController::class, 'create'])->name('products.create'); // Menampilkan form tambah produk
+Route::post('/products/store', [ProductController::class, 'store'])->name('products.store'); // Menyimpan produk

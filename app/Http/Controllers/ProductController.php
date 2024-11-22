@@ -44,15 +44,29 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        return view('products.form');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|numeric|min:0',
+        ]);
+
+        $products = session('products', []);
+
+        $products[] = [
+            'name' => $request->name,
+            'description' => $request->description,
+            'price' => $request->price,
+        ];
+
+        session(['products' => $products]);
+
+        return redirect()->route('products.index');
     }
 
     /**
