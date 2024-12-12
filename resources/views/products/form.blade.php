@@ -1,32 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New Product</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container mt-5">
-        <h1>Add New Product</h1>
-
-        <!-- Form untuk menambah produk -->
-        <form action="{{ route('products.store') }}" method="POST">
+<x-template title="Add new product">
+    <div class="container py-3">
+        <h1>{{ $title }}</h1>
+        <form class="was-validated" method="post" enctype="multipart/form-data"
+            action="{{ isset($product->id) ? route('products.update', ['id' => $product->id]) : route('products.store') }}">
             @csrf
             <div class="mb-3">
-                <label for="name" class="form-label">Product Name</label>
-                <input type="text" class="form-control" id="name" name="name" required>
+                <label for="name" class="form-label">Name</label>
+                <input type="text" class="form-control" name="name" id="name"
+                    value="{{ $product->name ?? '' }}" required>
             </div>
             <div class="mb-3">
-                <label for="description" class="form-label">Product Description</label>
-                <textarea class="form-control" id="description" name="description" required></textarea>
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" name="description" id="description">{{ $product->description ?? '' }}</textarea>
             </div>
             <div class="mb-3">
                 <label for="price" class="form-label">Price</label>
-                <input type="number" class="form-control" id="price" name="price" required>
+                <input type="number" class="form-control" name="price" id="price"
+                    value="{{ $product->price ?? 0 }}" min="1" required>
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <div class="mb-3">
+                <label for="image" class="form-label">Image</label>
+                @if(isset($product->image))
+                    <div class="mb-2">
+                        <img src="{{ asset('storage/' . $product->image) }}" alt="Product Image" class="img-fluid" style="max-width: 150px;">
+                    </div>
+                @endif
+                <input type="file" class="form-control" name="image" id="image"
+                    value="{{ old('image') }}" @unless(isset($product->image)) required @endunless>
+            </div>
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
         </form>
     </div>
-</body>
-</html>
+</x-template>
