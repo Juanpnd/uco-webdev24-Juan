@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use App\Models\Product; // Import model Product
+use Illuminate\Support\Facades\Storage; // Import Storage
 
 class ProductController extends Controller
 {
@@ -25,43 +25,38 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return view('products.form', [
+        return view('products.create', [
             'title' => 'Add new product'
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        // Validate the incoming request
+        // Validasi request
         $validated = $request->validate([
+            'name1' => 'required|string|max:255',
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
             'price' => 'required|numeric',
-            'image' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048', // Validate image file
+            'image' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
         ]);
 
-        // Handle the image upload
+        // Handle upload gambar jika ada
+        $imagePath = null;
         if ($request->hasFile('image')) {
-            // Store the image in the 'products' directory and get its path
             $imagePath = $request->file('image')->store('products', 'public');
-        } else {
-            // Default image if no image is uploaded
-            $imagePath = 'storage/products/default.jpg';
         }
 
-        // Create the product
+        // Simpan produk ke database
         $product = Product::create([
+            'name1' => $request->name1,
             'name' => $request->name,
-            'description' => $request->description,
             'price' => $request->price,
-            'image' => $imagePath
+            'image' => $imagePath,
         ]);
 
-        return redirect()->route('products.show', ['id' => $product->id]);
+        return redirect()->route('products.index')->with('success', 'Produk berhasil ditambahkan!');
     }
+
 
     /**
      * Display the specified resource.
@@ -76,17 +71,18 @@ class ProductController extends Controller
 
     public function tshirts()
     {
-        $products = Product::where('name', 'LIKE', '%T-S%')->get();
-
+        $products = Product::where('name1', 'tshirts')->get();
+    
         return view('products.index', [
             'title' => 'T-Shirts',
             'products' => $products,
         ]);
     }
+    
 
     public function shoes()
     {
-        $products = Product::where('name', 'LIKE', '%Sh%')->get();
+        $products = Product::where('name1', 'shoes')->get();
 
         return view('products.index', [
             'title' => 'Shoes',
@@ -96,7 +92,7 @@ class ProductController extends Controller
 
     public function shorts()
     {
-        $products = Product::where('name', 'LIKE', '%Sr%')->get();
+        $products = Product::where('name1', 'shorts')->get();
 
         return view('products.index', [
             'title' => 'Shorts',
@@ -105,26 +101,45 @@ class ProductController extends Controller
     }
 
     public function search(Request $request)
-    {
-        $query = $request->input('query');
+{
+    // Ambil input pencarian dari request
+    $query = $request->input('query');
 
-        $products = Product::where('name', 'LIKE', "%$query%")
-            ->orWhere('price', $query)
-            ->get();
+    // Cari produk berdasarkan name, price, atau description
+    $products = Product::where('name', 'LIKE', "%$query%")
+        ->orWhere('price', $query)
+        ->orWhere('description', 'LIKE', "%$query%")
+        ->get();
 
-        return view('products.index', [
-            'title' => 'Search Results',
-            'products' => $products,
-        ]);
+    // Kirim hasil pencarian ke view
+    return view('products.index', [
+        'title' => 'Search Results',
+        'products' => $products,
+    ]);
+}
+
+
+public function filter(Request $request)
+{
+    $query = Product::query();
+
+    // Periksa apakah `min_price` ada
+    if ($request->has('min_price') && $request->min_price !== null) {
+        $query->where('price', '>=', $request->min_price);
     }
 
-    public function filter(Request $request)
-    {
-        $minPrice = $request->input('min_price', 0);
-        $maxPrice = $request->input('max_price', PHP_INT_MAX);
-        $products = Product::whereBetween('price', [$minPrice, $maxPrice])->get();
-        return view('products.index', compact('products'));
+    // Periksa apakah `max_price` ada
+    if ($request->has('max_price') && $request->max_price !== null) {
+        $query->where('price', '<=', $request->max_price);
     }
+
+    // Ambil hasil filter
+    $products = $query->get();
+
+    // Kirim hasil filter ke view
+    return view('products.index', compact('products'));
+}
+
 
     /**
      * Show the form for editing the specified resource.
@@ -138,42 +153,43 @@ class ProductController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        // Validate the incoming request
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric',
-            'image' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048', // Validate image file
-        ]);
+public function update(Request $request, string $id)
+{
+    // Validasi data yang diterima
+    $validated = $request->validate([
+        'name1' => 'required|string|max:255',
+        'name' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'price' => 'required|numeric',
+        'image' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048', // Validasi file gambar
+    ]);
 
-        // Find the product
-        $product = Product::where('id', $id)->firstOrFail();
+    // Cari produk berdasarkan ID
+    $product = Product::where('id', $id)->firstOrFail();
 
-        // Handle the image upload
-        if ($request->hasFile('image')) {
-            // Delete the old image if it exists
-            if (Storage::exists($product->image)) {
-                Storage::delete($product->image);
-            }
-
-            // Store the new image and update its path
-            $imagePath = $request->file('image')->store('products', 'public');
-            $product->image = $imagePath;
+    // Handle unggahan gambar
+    if ($request->hasFile('image')) {
+        if ($product->image && Storage::exists($product->image)) {
+            Storage::delete($product->image);
         }
 
-        // Update the product details
-        $product->name = $request->name;
-        $product->description = $request->description;
-        $product->price = $request->price;
-        $product->save();
-
-        return redirect()->route('products.show', ['id' => $product->id]);
+        // Simpan gambar baru
+        $product->image = $request->file('image')->store('products', 'public');
     }
+
+
+    // Perbarui detail produk
+    $product->name1 = $request->name1;
+    $product->name = $request->name;
+    $product->description = $request->description;
+    $product->price = $request->price;
+    $product->save();
+
+    // Redirect ke halaman detail produk
+    return redirect()->route('products.show', ['id' => $product->id])
+        ->with('success', 'Produk berhasil diperbarui.');
+}
+
 
     /**
      * Remove the specified resource from storage.

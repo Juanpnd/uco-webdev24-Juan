@@ -50,28 +50,27 @@
 
 
         <div class="collapse navbar-collapse justify-content-center bg-light" id="navbarCategories">
-            <ul class="navbar-nav mb-2 mb-lg-0 text-center overflow-x-auto">
-                <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="{{ route('products.list') }}">All products</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="{{ route('products.shoes') }}">Shoes</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="{{ route('products.tshirts') }}">T-Shirts</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="{{ route('products.shorts') }}">Shorts</a>
-                </li>
-                <li class="nav-item">
-                        <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-                    </li>
-                </ul>
-                <form class="d-flex" role="search" action= "{{ route('products.search') }}" method="GET">
-                    <input class="form-control me-2" type="text" name="query" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
-                </form>
-            </div>
+    <ul class="navbar-nav mb-2 mb-lg-0 text-center overflow-x-auto">
+        <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{{ route('products.list') }}">All products</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{{ route('products.shoes') }}">Shoes</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{{ route('products.tshirts') }}">T-Shirts</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{{ route('products.shorts') }}">Shorts</a>
+        </li>
+    </ul>
+
+    <form class="d-flex" role="search" action="{{ route('products.search') }}" method="GET">
+        <input class="form-control me-2" type="text" name="query" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+    </form>
+</div>
+
         </div>
     </nav>
 
