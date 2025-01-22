@@ -5,6 +5,16 @@
             action="{{ isset($product->id) ? route('products.update', ['id' => $product->id]) : route('products.store') }}">
             @csrf
             <div class="mb-3">
+    <label for="name1" class="form-label">Kategori</label>
+    <select class="form-control" name="name1" id="name1" required>
+        <option value="">Pilih Kategori</option>
+        <option value="tshirts" {{ (isset($product) && $product->name1 == 'tshirts') ? 'selected' : '' }}>T-Shirts</option>
+        <option value="shoes" {{ (isset($product) && $product->name1 == 'shoes') ? 'selected' : '' }}>Shoes</option>
+        <option value="shorts" {{ (isset($product) && $product->name1 == 'shorts') ? 'selected' : '' }}>Shorts</option>
+    </select>
+</div>
+
+            <div class="mb-3">
                 <label for="name" class="form-label">Name</label>
                 <input type="text" class="form-control" name="name" id="name"
                     value="{{ $product->name ?? '' }}" required>
@@ -17,6 +27,11 @@
                 <label for="price" class="form-label">Price</label>
                 <input type="number" class="form-control" name="price" id="price"
                     value="{{ $product->price ?? 0 }}" min="1" required>
+            </div>
+            <div class="mb-3">
+                <label for="stok" class="form-label">Stok</label>
+                <input type="number" class="form-control" name="stok" id="stok"
+                    value="{{ $product->stok ?? 0 }}" min="1" required>
             </div>
             <div class="mb-3">
                 <label for="image" class="form-label">Image</label>

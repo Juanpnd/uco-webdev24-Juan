@@ -2,9 +2,10 @@
     <div class="container mt-4">
         <!-- Hero Section -->
         <div class="hero bg-light p-5 rounded text-center">
-            <h1 class="display-4">Selamat Datang !</h1>
-            <p class="lead">Temukan koleksi terbaik dari produk kami dengan penawaran terbaik.</p>
+            <h1 class="display-4 hero-title">Selamat Datang !</h1>
+            <p class="lead hero-subtitle">Temukan koleksi terbaik dari produk kami dengan penawaran terbaik.</p>
             <a href="{{ route('products.list') }}" class="btn btn-primary btn-lg">Jelajahi Produk</a>
+            <a href="{{ route('products1.index') }}" class="btn btn-secondary btn-lg">Lihat Daftar Produk</a>
         </div>
 
         <!-- Featured Categories -->
@@ -99,4 +100,11 @@
             </form>
         </section>
     </div>
+    <!-- Floating Action Button -->
+<a href="{{ route('products1.index') }}" 
+   class="btn btn-lg btn-success position-fixed bottom-0 end-0 m-3" 
+   title="Daftar Produk" 
+   data-bs-toggle="tooltip">
+    <i class="fa-solid fa-list"></i>
+</a>
 </x-template>
